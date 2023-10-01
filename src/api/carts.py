@@ -151,8 +151,8 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
             bank = row.gold
         cur_red_potions -= cart_red_potions
         bank += cost
-        connection.execute(sqlalchemy.text("UPDATE global_inventory SET gold = %d" (bank)))
-        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_red_potions = %d" (cur_red_potions)))
+        connection.execute(sqlalchemy.text("UPDATE global_inventory SET gold = %d" % (bank)))
+        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_red_potions = %d" % (cur_red_potions)))
 
     ht.remove(cart_id)
     return {"total_potions_bought": total_potions, "total_gold_paid": cost}
