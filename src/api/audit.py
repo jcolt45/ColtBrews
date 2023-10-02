@@ -16,10 +16,8 @@ router = APIRouter(
 def get_inventory():
     """ """
     with db.engine.begin() as connection:
-        result = connection.execute(sqlalchemy.text("SELECT * FROM global_inventory"))
-        for row in result:
-            print(row)
-    return {"number_of_potions": 0, "ml_in_barrels": 0, "gold": 0}
+        int = 1
+    return {"number_of_potions": 0, "ml_in_barrels": 0, "gold": int}
 
 class Result(BaseModel):
     gold_match: bool
