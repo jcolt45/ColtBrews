@@ -7,7 +7,6 @@ dotenv.load_dotenv()
 DEMO_KEY = "demo-key"
 
 api_keys = [
-    DEMO_KEY,
 ]  # This is encrypted in the database
 
 api_keys.append(os.environ.get("API_KEY"))
