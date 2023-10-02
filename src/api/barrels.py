@@ -32,7 +32,8 @@ def post_deliver_barrels(barrels_delivered: list[Barrel]):
     
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text("SELECT * FROM global_inventory"))
-        add_red_ml += result.num_red_ml
+        first_row = result.first()
+        add_red_ml += first_row.num_red_ml
         connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_red_ml = %d" % (add_red_ml)))
 
 
@@ -47,9 +48,9 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
     cur_red_potions = 0
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text("SELECT * FROM global_inventory"))
-        for row in result:
-            cur_red_potions += row.num_red_potions
-            bank = row.gold
+        first_row = result.first()
+        cur_red_potions += first_row.num_red_potions
+        bank = first_row.gold
 
         barrels = []
         for barrel in wholesale_catalog:

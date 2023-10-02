@@ -26,8 +26,8 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory]):
 
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text("SELECT * FROM global_inventory"))
-        for row in result:
-            cur_red_potions = row.num_red_potions + new_red_bots
+        first_row = result.first()
+        cur_red_potions = first_row.num_red_potions + new_red_bots
         connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_red_potions = %d" % (cur_red_potions)))
 
     return "OK"
@@ -48,8 +48,8 @@ def get_bottle_plan():
     cur_red_ml = 0
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text("SELECT * FROM global_inventory"))
-        for row in result:
-            cur_red_ml += row.num_red_ml
+        first_row = result.first()
+        cur_red_ml += first_row.num_red_ml
         new_red_bots = 0
         while (cur_red_ml >= 100):
             new_red_bots += 1

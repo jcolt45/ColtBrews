@@ -146,9 +146,9 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
     
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text("SELECT * FROM global_inventory"))
-        for row in result:
-            cur_red_potions = row.num_red_potions
-            bank = row.gold
+        first_row = result.first()
+        cur_red_potions = first_row.num_red_potions
+        bank = first_row.gold
         cur_red_potions -= cart_red_potions
         bank += cost
         connection.execute(sqlalchemy.text("UPDATE global_inventory SET gold = %d" % (bank)))

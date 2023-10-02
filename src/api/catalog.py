@@ -16,8 +16,8 @@ def get_catalog():
 
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text("SELECT * FROM global_inventory"))
-        for row in result:
-            cur_red_potions = row.num_red_potions
+        first_row = result.first()
+        cur_red_potions = first_row.num_red_potions
 
 
         return [
