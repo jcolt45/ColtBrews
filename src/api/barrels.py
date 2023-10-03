@@ -52,13 +52,20 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
         cur_red_potions += first_row.num_red_potions
         bank = first_row.gold
 
-        barrels = []
+        b_skus = []
+        b_quantity = []
         for barrel in wholesale_catalog:
             if (barrel.sku == "SMALL_RED_BARREL") & (cur_red_potions < 10):
                 if bank > barrel.price:
                     bank -= barrel.price
-                    barrels.append(barrel)
+                    b_skus.append(barrel.sku)
+                    b_quantity.append(1)
         
         connection.execute(sqlalchemy.text("UPDATE global_inventory SET gold = %d" % (bank)))
-        return barrels
+        return [
+        {
+            "sku": b_skus,
+            "quantity": b_quantity,
+        }
+    ]
 
