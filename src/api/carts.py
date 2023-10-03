@@ -25,7 +25,7 @@ carts:List[Cart] = []
 @router.post("/")
 def create_cart(new_cart: NewCart):
     """ """
-    global c_id
+    global c_id, carts
     new_id = c_id
     c_id += 1
     new_c = Cart
@@ -70,7 +70,7 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
             cart_red_potions = cur_cart.quantity[index]
             total_potions += cart_red_potions
             cost += (50 * cart_red_potions)
-        index += 1
+            index += 1
     
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text("SELECT * FROM global_inventory"))
