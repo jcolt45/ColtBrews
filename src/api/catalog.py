@@ -18,9 +18,10 @@ def get_catalog():
         result = connection.execute(sqlalchemy.text("SELECT * FROM global_inventory"))
         first_row = result.first()
         cur_red_potions = first_row.num_red_potions
-
-
-        return [
+        if (cur_red_potions == 0):
+            return [{}]
+        else:
+            return [
                 {
                     "sku": "RED_POTION_0",
                     "name": "red potion",
@@ -29,3 +30,5 @@ def get_catalog():
                     "potion_type": [100, 0, 0, 0],
                 }
             ]
+        
+    
