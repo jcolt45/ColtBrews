@@ -24,19 +24,20 @@ class Barrel(BaseModel):
 def post_deliver_barrels(barrels_delivered: list[Barrel]):
     """ """
     print(barrels_delivered)
-
-    add_red_ml = 0
-    for barrel in barrels_delivered:
-        if barrel.sku == "SMALL_RED_BARREL":
-            add_red_ml += barrel.ml_per_barrel
     
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text("SELECT * FROM global_inventory"))
         first_row = result.first()
+        bank = first_row.gold
+        add_red_ml = 0
+        for barrel in barrels_delivered:
+            if barrel.sku == "SMALL_RED_BARREL":
+                add_red_ml += (barrel.ml_per_barrel * barrel.quantity)
+            bank -= (barrel.price * barrel.quantity)
         add_red_ml += first_row.num_red_ml
         connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_red_ml = %d" % (add_red_ml)))
-
-
+        connection.execute(sqlalchemy.text("UPDATE global_inventory SET gold = %d" % (bank)))
+        
     return "OK"
 
 # Gets called once a day
@@ -52,20 +53,17 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
         cur_red_potions += first_row.num_red_potions
         bank = first_row.gold
 
-        b_skus = []
-        b_quantity = []
+        small_red = "SMALL_RED_BARREL"
+        small_red_num = 0
         for barrel in wholesale_catalog:
-            if (barrel.sku == "SMALL_RED_BARREL") & (cur_red_potions < 10):
-                if bank > barrel.price:
-                    bank -= barrel.price
-                    b_skus.append(barrel.sku)
-                    b_quantity.append(1)
+            if (barrel.sku == small_red) & (cur_red_potions < 10):
+                if (bank > barrel.price) & (barrel.quantity > 0):
+                    small_red_num += 1
         
-        connection.execute(sqlalchemy.text("UPDATE global_inventory SET gold = %d" % (bank)))
         return [
         {
-            "sku": b_skus,
-            "quantity": b_quantity,
+            "sku": small_red,
+            "quantity": small_red_num,
         }
     ]
 
