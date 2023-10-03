@@ -25,6 +25,7 @@ carts:List[Cart] = []
 @router.post("/")
 def create_cart(new_cart: NewCart):
     """ """
+    global c_id
     new_id = c_id
     c_id += 1
     new_c = Cart
