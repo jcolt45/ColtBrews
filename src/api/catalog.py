@@ -13,17 +13,19 @@ def get_catalog():
     """
 
     # Can return a max of 20 items.
+    colors = ["red", "green", "blue"]
+    color_hue = [[100, 0, 0, 0], [0, 100, 0, 0], [0, 0, 100, 0]]
 
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text("SELECT * FROM global_inventory"))
         first_row = result.first()
         cur_red_potions = first_row.num_red_potions
         if (cur_red_potions == 0):
-            return [{}]
+            return []
         else:
             return [
                 {
-                    "sku": "RED_POTION_0",
+                    "sku": "RED_POTION_0", 
                     "name": "red potion",
                     "quantity": cur_red_potions,
                     "price": 50,
