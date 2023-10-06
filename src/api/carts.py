@@ -70,16 +70,32 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
             cart_red_potions = cur_cart.quantity[index]
             total_potions += cart_red_potions
             cost += (50 * cart_red_potions)
-            index += 1
+        elif item == "GREEN_POTION_0":
+            cart_green_potions = cur_cart.quantity[index]
+            total_potions += cart_green_potions
+            cost += (50 * cart_green_potions)
+        elif item == "BLUE_POTION_0":
+            cart_blue_potions = cur_cart.quantity[index]
+            total_potions += cart_blue_potions
+            cost += (50 * cart_blue_potions)
+        index += 1
     
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text("SELECT * FROM global_inventory"))
         first_row = result.first()
         cur_red_potions = first_row.num_red_potions
+        cur_green_potions = first_row.num_green_potions
+        cur_blue_potions = first_row.num_blue_potions
         bank = first_row.gold
+
         cur_red_potions -= cart_red_potions
+        cur_green_potions -= cart_green_potions
+        cur_blue_potions -= cart_blue_potions
         bank += cost
+        
         connection.execute(sqlalchemy.text("UPDATE global_inventory SET gold = %d" % (bank)))
         connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_red_potions = %d" % (cur_red_potions)))
+        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_potions = %d" % (cur_green_potions)))
+        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_blue_potions = %d" % (cur_blue_potions)))
 
     return {"total_potions_bought": total_potions, "total_gold_paid": cost}
