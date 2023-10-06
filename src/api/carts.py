@@ -64,7 +64,9 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
     cur_cart = carts[cart_id]
     index = 0
     cost = 0
-    total_potions = 0
+    cart_red_potions = 0
+    cart_green_potions = 0
+    cart_blue_potions = 0
     for item in cur_cart.items:
         if item == "RED_POTION_0":
             cart_red_potions = cur_cart.quantity[index]
@@ -79,20 +81,16 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
             total_potions += cart_blue_potions
             cost += (50 * cart_blue_potions)
         index += 1
-    
+    total_potions = cart_red_potions + cart_blue_potions + cart_green_potions
+
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text("SELECT * FROM global_inventory"))
         first_row = result.first()
-        cur_red_potions = first_row.num_red_potions
-        cur_green_potions = first_row.num_green_potions
-        cur_blue_potions = first_row.num_blue_potions
-        bank = first_row.gold
+        cur_red_potions = first_row.num_red_potions - cart_red_potions
+        cur_green_potions = first_row.num_green_potions - cart_green_potions
+        cur_blue_potions = first_row.num_blue_potions - cart_blue_potions
+        bank = first_row.gold + cost
 
-        cur_red_potions -= cart_red_potions
-        cur_green_potions -= cart_green_potions
-        cur_blue_potions -= cart_blue_potions
-        bank += cost
-        
         connection.execute(sqlalchemy.text("UPDATE global_inventory SET gold = %d" % (bank)))
         connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_red_potions = %d" % (cur_red_potions)))
         connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_potions = %d" % (cur_green_potions)))
