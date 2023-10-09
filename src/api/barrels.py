@@ -43,8 +43,8 @@ def post_deliver_barrels(barrels_delivered: list[Barrel]):
             bank -= (barrel.price * barrel.quantity)
 
         connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_red_ml = %d" % (add_red_ml)))
-        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_ml = %d" % (add_red_ml)))
-        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_blue_ml = %d" % (add_red_ml)))
+        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_ml = %d" % (add_green_ml)))
+        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_blue_ml = %d" % (add_blue_ml)))
         connection.execute(sqlalchemy.text("UPDATE global_inventory SET gold = %d" % (bank)))
 
     return "OK"
@@ -71,15 +71,15 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
         small_blue_num = 0
         for barrel in wholesale_catalog:
             if (barrel.sku == small_red) & (cur_red_potions < 10):
-                if (bank > barrel.price) & (barrel.quantity > 0):
+                if (bank >= barrel.price) & (barrel.quantity > 0):
                     small_red_num += 1
                     bank -= barrel.price
             elif (barrel.sku == small_green) & (cur_green_potions < 10):
-                if (bank > barrel.price) & (barrel.quantity > 0):
+                if (bank >= barrel.price) & (barrel.quantity > 0):
                     small_green_num += 1
                     bank -= barrel.price
             elif (barrel.sku == small_blue) & (cur_blue_potions < 10):
-                if (bank > barrel.price) & (barrel.quantity > 0):
+                if (bank >= barrel.price) & (barrel.quantity > 0):
                     small_blue_num += 1
                     bank -= barrel.price
         
