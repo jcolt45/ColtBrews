@@ -96,45 +96,51 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
 
 
         for barrel in wholesale_catalog:
-            if (barrel.potion_type == [100, 0 , 0, 0]) & (cur_red_potions < 10):
+            if (barrel.potion_type == [100, 0 , 0, 0]) & (cur_red_potions < 5):
                 #red barrels
                 if (bank >= barrel.price) & (total_red_barrels == 0):
-                    if (barrel.sku == large_red):
-                        large_red_num += 1
-                    elif (barrel.sku == med_red):
-                        med_red_num += 1
-                    elif (barrel.sku == small_red):
+                    #if (barrel.sku == large_red):
+                        #large_red_num += 1
+                    #elif (barrel.sku == med_red):
+                        #med_red_num += 1
+                    if (barrel.sku == small_red):
                         small_red_num += 1
+                        total_red_barrels += 1
+                        bank -= barrel.price
                     elif (barrel.sku == mini_red):
                         mini_red_num += 1
-                    total_red_barrels += 1
-                    bank -= barrel.price
+                        total_red_barrels += 1
+                        bank -= barrel.price
             elif (barrel.potion_type == [0, 100, 0, 0]) & (cur_green_potions < 10):
                 #green barrels
                 if (bank >= barrel.price) & (total_green_barrels == 0):
-                    if (barrel.sku == large_green):
-                        large_green_num += 1
-                    elif (barrel.sku == med_green):
-                        med_green_num += 1
-                    elif (barrel.sku == small_green):
+                    #if (barrel.sku == large_green):
+                        #large_green_num += 1
+                    #elif (barrel.sku == med_green):
+                        #med_green_num += 1
+                    if (barrel.sku == small_green):
                         small_green_num += 1
+                        total_green_barrels += 1
+                        bank -= barrel.price
                     elif (barrel.sku == mini_green):
                         mini_green_num += 1
-                    total_green_barrels += 1
-                    bank -= barrel.price
+                        total_green_barrels += 1
+                        bank -= barrel.price
             elif (barrel.potion_type == [0, 0, 100, 0]) & (cur_blue_potions < 10):
                 #blue barrels
                 if (bank >= barrel.price) & (total_blue_barrels == 0):
-                    if (barrel.sku == large_blue):
-                        large_blue_num += 1
-                    elif (barrel.sku == med_blue):
-                        med_blue_num += 1
-                    elif (barrel.sku == small_blue):
+                    #if (barrel.sku == large_blue):
+                        #large_blue_num += 1
+                    #elif (barrel.sku == med_blue):
+                        #med_blue_num += 1
+                    if (barrel.sku == small_blue):
                         small_blue_num += 1
+                        total_blue_barrels += 1
+                        bank -= barrel.price
                     elif (barrel.sku == mini_blue):
                         mini_blue_num += 1
-                    total_blue_barrels += 1
-                    bank -= barrel.price
+                        total_blue_barrels += 1
+                        bank -= barrel.price
         
         plan = []
         #add red barrels to plan
