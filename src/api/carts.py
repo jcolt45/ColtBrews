@@ -70,13 +70,13 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
     for item in cur_cart.items:
         if item == "RED_POTION_0":
             cart_red_potions = cur_cart.quantity[index]
-            cost += (50 * cart_red_potions)
+            cost += (40 * cart_red_potions)
         elif item == "GREEN_POTION_0":
             cart_green_potions = cur_cart.quantity[index]
-            cost += (50 * cart_green_potions)
+            cost += (30 * cart_green_potions)
         elif item == "BLUE_POTION_0":
             cart_blue_potions = cur_cart.quantity[index]
-            cost += (50 * cart_blue_potions)
+            cost += (30 * cart_blue_potions)
         index += 1
     total_potions = cart_red_potions + cart_blue_potions + cart_green_potions
 
