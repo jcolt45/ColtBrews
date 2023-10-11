@@ -31,16 +31,16 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory]):
         cur_blue_ml = first_row.num_blue_ml
         cur_blue_potions = first_row.num_blue_potions
         for potion in potions_delivered:
-            if potion.potion_type == [100, 0, 0, 0]:
+            if potion.potion_type == [1, 0, 0, 0]:
                 cur_red_potions += potion.quantity
                 cur_red_ml -= (100 * potion.quantity)
-            elif potion.potion_type == [0, 100, 0, 0]:
+            elif potion.potion_type == [0, 1, 0, 0]:
                 cur_green_potions += potion.quantity
                 cur_green_ml -= (100 * potion.quantity)
-            elif potion.potion_type == [0, 0, 100, 0]:
+            elif potion.potion_type == [0, 0, 1, 0]:
                 cur_blue_potions += potion.quantity
                 cur_blue_ml -= (100 * potion.quantity)
-                
+
         connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_red_ml = %d" % (cur_red_ml)))
         connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_red_potions = %d" % (cur_red_potions)))
 
