@@ -34,11 +34,11 @@ def post_deliver_barrels(barrels_delivered: list[Barrel]):
         add_blue_ml = first_row.num_blue_ml
 
         for barrel in barrels_delivered:
-            if barrel.potion_type == [100, 0, 0, 0]:
+            if barrel.potion_type == [1, 0, 0, 0]:
                 add_red_ml += (barrel.ml_per_barrel * barrel.quantity)
-            if barrel.potion_type == [0, 100, 0, 0]:
+            if barrel.potion_type == [0, 1, 0, 0]:
                 add_green_ml += (barrel.ml_per_barrel * barrel.quantity)
-            if barrel.potion_type == [0, 0, 100, 0]:
+            if barrel.potion_type == [0, 0, 1, 0]:
                 add_blue_ml += (barrel.ml_per_barrel * barrel.quantity)
             bank -= (barrel.price * barrel.quantity)
 
