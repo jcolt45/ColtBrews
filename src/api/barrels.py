@@ -51,7 +51,7 @@ def post_deliver_barrels(barrels_delivered: list[Barrel]):
                             red_ml = red_ml + :red_ml,
                             green_ml = green_ml + :green_ml,
                             blue_ml = blue_ml + :blue_ml,
-                            dark_ml = dark_ml + :dark_ml,
+                            dark_ml = dark_ml + :dark_ml
                             """),
                             [{"cost": cost, "red_ml": red_ml, "green_ml": green_ml, "blue_ml": blue_ml, "dark_ml": dark_ml}])
 
