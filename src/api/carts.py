@@ -27,8 +27,7 @@ def create_cart(new_cart: NewCart):
                             RETURNING cart_id
                             """),
                             [{"name": new_cart.customer}])
-        cart_id = new_id.fetchall().cart_id
-    return {"cart_id": cart_id}
+    return {"cart_id": new_id.first().cart_id}
 
 
 @router.get("/{cart_id}")
