@@ -26,8 +26,8 @@ def create_cart(new_cart: NewCart):
                             VALUES (:name) 
                             RETURNING cart_id
                             """),
-                            [{"name": new_cart.customer}])
-    return {"cart_id": new_id.first().cart_id}
+                            [{"name": new_cart.customer}]).first().cart_id
+    return {"cart_id": new_id}
 
 
 @router.get("/{cart_id}")
@@ -38,7 +38,8 @@ def get_cart(cart_id: int):
     with db.engine.begin() as connection:
         result = connection.execute(
             sqlalchemy.text("""
-                            SELECT * FROM cart_items 
+                            SELECT * 
+                            FROM cart_items 
                             WHERE cart_id = :cart_id
                             """),
                             [{"cart_id": cart_id}])
@@ -58,18 +59,18 @@ def set_item_quantity(cart_id: int, item_sku: str, cart_item: CartItem):
     with db.engine.begin() as connection:
         potion = connection.execute(
             sqlalchemy.text("""
-                            SELECT * 
+                            SELECT potion_id
                             FROM potion_inventory
                             WHERE sku = :item_sku
                             """),
-                            [{"item_sku": item_sku}])
+                            [{"item_sku": item_sku}]).first().potion_id
         connection.execute(
             sqlalchemy.text("""
                             INSERT INTO cart_items 
                             (cart_id, potion_id, sku, quantity)
                             VALUES (:cart_id, :potion_id, :sku, :quantity)
                             """),
-                            [{"cart_id": cart_id, "potion_id": potion.first().potion_id, "sku": item_sku, "quantity": cart_item.quantity}])
+                            [{"cart_id": cart_id, "potion_id": potion, "sku": item_sku, "quantity": cart_item.quantity}])
     return "OK"
 
 
@@ -82,7 +83,8 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
     with db.engine.begin() as connection:
         result = connection.execute(
             sqlalchemy.text("""
-                            SELECT * FROM cart_items 
+                            SELECT * 
+                            FROM cart_items 
                             WHERE cart_id = :cart_id
                             """),
                             [{"cart_id": cart_id}])
@@ -99,11 +101,12 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
                                 [{"pots": row.quantity, "pot_id": row.potion_id}])
             cost = connection.execute(
                 sqlalchemy.text("""
-                                SELECT cost FROM potion_inventory 
+                                SELECT cost 
+                                FROM potion_inventory 
                                 WHERE potion_id = :pot_id
                                 """),
-                                [{"pot_id": row.potion_id}])
-            total_cost += cost.first().cost * row.quantity
+                                [{"pot_id": row.potion_id}]).first().cost
+            total_cost += cost * row.quantity
         connection.execute(
             sqlalchemy.text("""
                             UPDATE shop_inventory 
