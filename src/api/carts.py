@@ -24,7 +24,7 @@ def create_cart(new_cart: NewCart):
                             INSERT INTO carts
                             (potions, cost)
                             VALUES (0, 0) 
-                            RETURNING id
+                            RETURNING cart_id
                             """))
     return {"cart_id": new_id}
 
