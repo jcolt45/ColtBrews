@@ -30,10 +30,10 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory]):
                                 WHERE type = :type
                                 """),
                                 [{"pots": potion.quantity, "type": potion.potion_type}])
-            red_ml = potion.potion_type[0]
-            green_ml = potion.potion_type[1]
-            blue_ml = potion.potion_type[2]
-            dark_ml = potion.potion_type[3]
+            red_ml = potion.potion_type[0] * potion.quantity
+            green_ml = potion.potion_type[1] * potion.quantity
+            blue_ml = potion.potion_type[2] * potion.quantity
+            dark_ml = potion.potion_type[3] * potion.quantity
             connection.execute(
                 sqlalchemy.text("""
                                 UPDATE shop_inventory SET 
