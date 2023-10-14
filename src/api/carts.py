@@ -103,7 +103,7 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
                                 WHERE potion_id = :pot_id
                                 """),
                                 [{"pot_id": row.potion_id}])
-            total_cost += cost * row.quantity
+            total_cost += cost.first().cost * row.quantity
         connection.execute(
             sqlalchemy.text("""
                             UPDATE shop_inventory 
