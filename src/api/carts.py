@@ -22,8 +22,8 @@ def create_cart(new_cart: NewCart):
         new_id = connection.execute(
             sqlalchemy.text("""
                             INSERT INTO carts
-                            (name, cost)
-                            VALUES (:name, 0) 
+                            (name)
+                            VALUES (:name) 
                             RETURNING cart_id
                             """),
                             [{"name": new_cart.customer}])
@@ -107,7 +107,7 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
         connection.execute(
             sqlalchemy.text("""
                             UPDATE shop_inventory 
-                            SET gold = gold - :cost
+                            SET gold = gold + :cost
                             """),
                             [{"cost": total_cost}])
         return {"total_potions_bought": total_potions, "total_gold_paid": total_cost}
