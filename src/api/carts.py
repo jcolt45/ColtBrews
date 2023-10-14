@@ -56,9 +56,9 @@ class CartItem(BaseModel):
 def set_item_quantity(cart_id: int, item_sku: str, cart_item: CartItem):
     """ """
     with db.engine.begin() as connection:
-        potion_id = connection.execute(
+        potion = connection.execute(
             sqlalchemy.text("""
-                            SELECT potion_id 
+                            SELECT * 
                             FROM potion_inventory
                             WHERE sku = :item_sku
                             """),
@@ -69,7 +69,7 @@ def set_item_quantity(cart_id: int, item_sku: str, cart_item: CartItem):
                             (cart_id, potion_id, sku, quantity)
                             VALUES (:cart_id, :potion_id, :sku, :quantity)
                             """),
-                            [{"cart_id": cart_id, "potion_id": potion_id.first().potion_id, "sku": item_sku, "quantity": cart_item.quantity}])
+                            [{"cart_id": cart_id, "potion_id": potion.first().potion_id, "sku": item_sku, "quantity": cart_item.quantity}])
     return "OK"
 
 
