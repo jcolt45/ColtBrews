@@ -22,12 +22,13 @@ def create_cart(new_cart: NewCart):
         new_id = connection.execute(
             sqlalchemy.text("""
                             INSERT INTO carts
-                            (name, potions, cost)
-                            VALUES (:name, 0, 0) 
+                            (name, cost)
+                            VALUES (:name, 0) 
                             RETURNING cart_id
                             """),
                             [{"name": new_cart.customer}])
-    return {"cart_id": new_id.fetchall()}
+        cart_id = new_id.fetchall().cart_id
+    return {"cart_id": cart_id}
 
 
 @router.get("/{cart_id}")
