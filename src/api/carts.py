@@ -82,7 +82,7 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
     with db.engine.begin() as connection:
         result = connection.execute(
             sqlalchemy.text("""
-                            SELECT * FROM carts_items 
+                            SELECT * FROM cart_items 
                             WHERE cart_id = :cart_id
                             """),
                             [{"cart_id": cart_id}])
