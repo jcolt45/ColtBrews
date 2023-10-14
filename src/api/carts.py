@@ -26,7 +26,7 @@ def create_cart(new_cart: NewCart):
                             VALUES (0, 0) 
                             RETURNING cart_id
                             """))
-    return {"cart_id": new_id}
+    return {"cart_id": new_id.cart_id}
 
 
 @router.get("/{cart_id}")
