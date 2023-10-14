@@ -21,7 +21,9 @@ def create_cart(new_cart: NewCart):
     with db.engine.begin() as connection:
         new_id = connection.execute(
             sqlalchemy.text("""
-                            INSERT INTO carts 
+                            INSERT INTO carts
+                            (potions, cost)
+                            VALUES (0, 0) 
                             RETURNING id
                             """))
     return {"cart_id": new_id}
