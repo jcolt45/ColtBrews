@@ -69,12 +69,12 @@ def get_bottle_plan():
         result = connection.execute(sqlalchemy.text("SELECT * FROM potion_inventory"))
         for potion in result:
             cur_pots = potion.num
+            new_pots = 0
             if (cur_pots < 5):
                 red = potion.type[0]
                 green = potion.type[1]
                 blue = potion.type[2]
                 dark = potion.type[3]
-                new_pots = 0
                 while (red <= red_ml) & (green <= green_ml) & (blue <= blue_ml) & (dark <= dark_ml) & (cur_pots < 5):
                     cur_pots += 1
                     red_ml -= red
