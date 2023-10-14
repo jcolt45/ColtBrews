@@ -69,7 +69,7 @@ def set_item_quantity(cart_id: int, item_sku: str, cart_item: CartItem):
                             (cart_id, potion_id, sku, quantity)
                             VALUES (:cart_id, :potion_id, :sku, :quantity)
                             """),
-                            [{"cart_id": cart_id, "potion_id": potion_id, "sku": item_sku, "quantity": cart_item.quantity}])
+                            [{"cart_id": cart_id, "potion_id": potion_id.first().potion_id, "sku": item_sku, "quantity": cart_item.quantity}])
     return "OK"
 
 
