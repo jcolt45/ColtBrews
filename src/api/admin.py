@@ -19,19 +19,25 @@ def reset():
     """
     with db.engine.begin() as connection:
         connection.execute(
-                sqlalchemy.text("""
-                                UPDATE shop_inventory SET 
-                                gold = 100,
-                                red_ml = 0,
-                                green_ml = 0,
-                                blue_ml = 0,
-                                dark_ml = 0
-                                """))
+                sqlalchemy.text("DELETE FROM inventory_ledger"))
         connection.execute(
-                sqlalchemy.text("""
-                                UPDATE potion_inventory 
-                                SET num = 0
-                                """))
+            sqlalchemy.text("""
+                            INSERT INTO inventory_ledger 
+                            (gold)
+                            VALUES (100)
+                            """))
+        connection.execute(
+                sqlalchemy.text("DELETE FROM potion_ledger"))
+        result = connection.execute(
+                sqlalchemy.text("SELECT * FROM potion_inventory"))
+        for potion in result:
+            connection.execute(
+            sqlalchemy.text("""
+                            INSERT INTO potion_ledger 
+                            (potion_id, potion_change)
+                            VALUES (:potion_id, 0)
+                            """),
+                            [{"potion_id": potion.potion_id}])
     return "OK"
 
 
