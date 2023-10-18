@@ -29,7 +29,7 @@ def get_inventory():
         total_ml = result.red_ml + result.green_ml + result.blue_ml + result.dark_ml
         total_potions = connection.execute(
                 sqlalchemy.text("""
-                                SELECT SUM(potion_change) as potions,
+                                SELECT SUM(potion_change) as potions
                                 FROM potion_ledger
                                 """)).first().potions
         return {"number_of_potions": total_potions, "ml_in_barrels": total_ml, "gold": result.gold}

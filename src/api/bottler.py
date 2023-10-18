@@ -27,7 +27,7 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory]):
             sqlalchemy.text("""
                             SELECT potion_id
                             FROM potion_inventory
-                            WHERE potion_type = :potion_type
+                            WHERE type = :potion_type
                             """),
                             [{"potion_type": potion.potion_type}]).first().potion_id
     
@@ -35,7 +35,7 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory]):
             sqlalchemy.text("""
                             INSERT INTO potion_ledger 
                             (potion_id, potion_change)
-                            VALUES (:potion_id, :potions_change)
+                            VALUES (:potion_id, :potion_change)
                             """),
                             [{"potion_id": pot_id, "potion_change": potion.quantity}])
     
@@ -47,7 +47,7 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory]):
             sqlalchemy.text("""
                             INSERT INTO inventory_ledger 
                             (red_ml, green_ml, blue_ml, dark_ml)
-                            VALUES (:red_ml, :green_ml, :blue_ml, ;dark_ml)
+                            VALUES (:red_ml, :green_ml, :blue_ml, :dark_ml)
                             """),
                             [{"red_ml": red_ml, "green_ml": green_ml, "blue_ml": blue_ml, "dark_ml": dark_ml}])
     return "OK"

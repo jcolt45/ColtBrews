@@ -69,6 +69,7 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
                                 FROM inventory_ledger
                                 """)).first()
         bank = result.gold
+        print(bank)
         red_ml = result.red_ml
         green_ml = result.green_ml
         blue_ml = result.blue_ml

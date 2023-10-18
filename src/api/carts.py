@@ -96,9 +96,9 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
             sqlalchemy.text("""
                             INSERT INTO potion_ledger 
                             (potion_id, potion_change)
-                            VALUES (:potion_id, :potions_change)
+                            VALUES (:potion_id, :potion_change)
                             """),
-                            [{"potion_id": row.potion_id, "potion_change": row.quantity}])
+                            [{"potion_id": row.potion_id, "potion_change": (-1 * row.quantity)}])
             cost = connection.execute(
                 sqlalchemy.text("""
                                 SELECT cost 
