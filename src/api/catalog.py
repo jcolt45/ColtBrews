@@ -16,7 +16,15 @@ def get_catalog():
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text("SELECT * FROM potion_inventory"))
         for potion in result:
-            if (potion.num > 0):
+            num_pots = connection.execute(
+                sqlalchemy.text("""
+                                SELECT SUM(potion_change)
+                                FROM potion_ledger
+                                WHERE potion_id = :potion_id
+                                """),
+                                [{"potion_id": potion.potion_id}]).first().potion_change
+            print(num_pots)
+            if (num_pots > 0):
                 plan.append({
                 "sku": potion.sku, 
                 "name": potion.name,
