@@ -71,7 +71,7 @@ def get_bottle_plan():
                 sqlalchemy.text("""
                                 SELECT 
                                 SUM(red_ml) as red_ml,
-                                SUM(green_ml) as green_ml
+                                SUM(green_ml) as green_ml,
                                 SUM(blue_ml) as blue_ml,
                                 SUM(dark_ml) as dark_ml
                                 FROM inventory_ledger
