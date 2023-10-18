@@ -21,7 +21,7 @@ def get_inventory():
                                 SELECT 
                                 SUM(gold) as gold,
                                 SUM(red_ml) as red_ml,
-                                SUM(green_ml) as green_ml
+                                SUM(green_ml) as green_ml,
                                 SUM(blue_ml) as blue_ml,
                                 SUM(dark_ml) as dark_ml
                                 FROM inventory_ledger

@@ -38,6 +38,10 @@ def reset():
                             VALUES (:potion_id, 0)
                             """),
                             [{"potion_id": potion.potion_id}])
+        connection.execute(
+                sqlalchemy.text("DELETE FROM carts"))
+        connection.execute(
+                sqlalchemy.text("DELETE FROM cart_items"))
     return "OK"
 
 
