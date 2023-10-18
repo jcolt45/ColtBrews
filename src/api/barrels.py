@@ -39,22 +39,16 @@ def post_deliver_barrels(barrels_delivered: list[Barrel]):
             blue_ml += (barrel.ml_per_barrel * barrel.quantity)
         elif barrel.potion_type == [0, 0, 0, 1]:
             dark_ml += (barrel.ml_per_barrel * barrel.quantity)
-        cost += (barrel.price * barrel.quantity)
+        cost -= (barrel.price * barrel.quantity)
     
     with db.engine.begin() as connection:
-        result = connection.execute(sqlalchemy.text("SELECT * FROM shop_inventory"))
-        first_row = result.first()
         connection.execute(
             sqlalchemy.text("""
-                            UPDATE shop_inventory SET 
-                            gold = gold - :cost,
-                            red_ml = red_ml + :red_ml,
-                            green_ml = green_ml + :green_ml,
-                            blue_ml = blue_ml + :blue_ml,
-                            dark_ml = dark_ml + :dark_ml
+                            INSERT INTO inventory_ledger 
+                            (gold, red_ml, green_ml, blue_ml, dark_ml)
+                            VALUES (:gold, :red_ml, :green_ml, :blue_ml, :dark_ml)
                             """),
-                            [{"cost": cost, "red_ml": red_ml, "green_ml": green_ml, "blue_ml": blue_ml, "dark_ml": dark_ml}])
-
+                            [{"gold": cost, "red_ml": red_ml, "green_ml": green_ml, "blue_ml": blue_ml, "dark_ml": dark_ml}])
     return "OK"
 
 # Gets called once a day
@@ -64,13 +58,21 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
     print(wholesale_catalog)
 
     with db.engine.begin() as connection:
-        result = connection.execute(sqlalchemy.text("SELECT * FROM shop_inventory"))
-        first_row = result.first()
-        bank = first_row.gold
-        red_ml = first_row.red_ml
-        green_ml = first_row.green_ml
-        blue_ml = first_row.blue_ml
-        dark_ml = first_row.dark_ml
+        result = connection.execute(
+                sqlalchemy.text("""
+                                SELECT 
+                                SUM(gold) as gold,
+                                SUM(red_ml) as red_ml,
+                                SUM(green_ml) as green_ml
+                                SUM(blue_ml) as blue_ml,
+                                SUM(dark_ml) as dark_ml
+                                FROM inventory_ledger
+                                """)).first()
+        bank = result.gold
+        red_ml = result.red_ml
+        green_ml = result.green_ml
+        blue_ml = result.blue_ml
+        dark_ml = result.dark_ml
 
         mini_red = "MINI_RED_BARREL"
         mini_red_num = 0

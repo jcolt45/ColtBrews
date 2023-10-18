@@ -23,27 +23,33 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory]):
 
     with db.engine.begin() as connection:
         for potion in potions_delivered:
+            pot_id = connection.execute(
+            sqlalchemy.text("""
+                            SELECT potion_id
+                            FROM potion_inventory
+                            WHERE potion_type = :potion_type
+                            """),
+                            [{"potion_type": potion.potion_type}]).first().potion_id
+    
             connection.execute(
-                sqlalchemy.text("""
-                                UPDATE potion_inventory 
-                                SET num = num + :pots
-                                WHERE type = :type
-                                """),
-                                [{"pots": potion.quantity, "type": potion.potion_type}])
-            red_ml = potion.potion_type[0] * potion.quantity
-            green_ml = potion.potion_type[1] * potion.quantity
-            blue_ml = potion.potion_type[2] * potion.quantity
-            dark_ml = potion.potion_type[3] * potion.quantity
+            sqlalchemy.text("""
+                            INSERT INTO potion_ledger 
+                            (potion_id, potion_change)
+                            VALUES (:potion_id, :potions_change)
+                            """),
+                            [{"potion_id": pot_id, "potion_change": potion.quantity}])
+    
+            red_ml = -1 * (potion.potion_type[0] * potion.quantity)
+            green_ml = -1 * (potion.potion_type[1] * potion.quantity)
+            blue_ml = -1 * (potion.potion_type[2] * potion.quantity)
+            dark_ml = -1 * (potion.potion_type[3] * potion.quantity)
             connection.execute(
-                sqlalchemy.text("""
-                                UPDATE shop_inventory SET 
-                                red_ml = red_ml - :red_ml,
-                                green_ml = green_ml - :green_ml,
-                                blue_ml = blue_ml - :blue_ml,
-                                dark_ml = dark_ml - :dark_ml
-                                """),
-                                [{"red_ml": red_ml, "green_ml": green_ml, "blue_ml": blue_ml, "dark_ml": dark_ml}])
-
+            sqlalchemy.text("""
+                            INSERT INTO inventory_ledger 
+                            (red_ml, green_ml, blue_ml, dark_ml)
+                            VALUES (:red_ml, :green_ml, :blue_ml, ;dark_ml)
+                            """),
+                            [{"red_ml": red_ml, "green_ml": green_ml, "blue_ml": blue_ml, "dark_ml": dark_ml}])
     return "OK"
 
 # Gets called 4 times a day
@@ -61,15 +67,28 @@ def get_bottle_plan():
     plan = []
     min_pots = 5
     with db.engine.begin() as connection:
-        result = connection.execute(sqlalchemy.text("SELECT * FROM shop_inventory"))
-        first_row = result.first()
-        red_ml = first_row.red_ml
-        green_ml = first_row.green_ml
-        blue_ml = first_row.blue_ml
-        dark_ml = first_row.dark_ml
+        result = connection.execute(
+                sqlalchemy.text("""
+                                SELECT 
+                                SUM(red_ml) as red_ml,
+                                SUM(green_ml) as green_ml
+                                SUM(blue_ml) as blue_ml,
+                                SUM(dark_ml) as dark_ml
+                                FROM inventory_ledger
+                                """)).first()
+        red_ml = result.red_ml
+        green_ml = result.green_ml
+        blue_ml = result.blue_ml
+        dark_ml = result.dark_ml
         result = connection.execute(sqlalchemy.text("SELECT * FROM potion_inventory"))
         for potion in result:
-            cur_pots = potion.num
+            cur_pots = connection.execute(
+                sqlalchemy.text("""
+                                SELECT SUM(potion_change) as potion_change
+                                FROM potion_ledger
+                                WHERE potion_id = :potion_id
+                                """),
+                                [{"potion_id": potion.potion_id}]).first().potion_change
             new_pots = 0
             if (cur_pots < min_pots):
                 red = potion.type[0]

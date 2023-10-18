@@ -93,12 +93,12 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
         for row in result:
             total_potions += row.quantity
             connection.execute(
-                sqlalchemy.text("""
-                                UPDATE potion_inventory 
-                                SET num = num - :pots
-                                WHERE potion_id = :pot_id
-                                """),
-                                [{"pots": row.quantity, "pot_id": row.potion_id}])
+            sqlalchemy.text("""
+                            INSERT INTO potion_ledger 
+                            (potion_id, potion_change)
+                            VALUES (:potion_id, :potions_change)
+                            """),
+                            [{"potion_id": row.potion_id, "potion_change": row.quantity}])
             cost = connection.execute(
                 sqlalchemy.text("""
                                 SELECT cost 
@@ -109,9 +109,10 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
             total_cost += cost * row.quantity
         connection.execute(
             sqlalchemy.text("""
-                            UPDATE shop_inventory 
-                            SET gold = gold + :cost
+                            INSERT INTO inventory_ledger
+                            (gold)
+                            VALUES (:gold)
                             """),
-                            [{"cost": total_cost}])
+                            [{"gold": total_cost}])
         return {"total_potions_bought": total_potions, "total_gold_paid": total_cost}
 

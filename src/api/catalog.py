@@ -19,11 +19,11 @@ def get_catalog():
             num_pots = connection.execute(
                 sqlalchemy.text("""
                                 SELECT SUM(potion_change)
+                                as num_pots
                                 FROM potion_ledger
                                 WHERE potion_id = :potion_id
                                 """),
-                                [{"potion_id": potion.potion_id}]).first().potion_change
-            print(num_pots)
+                                [{"potion_id": potion.potion_id}]).first().num_pots
             if (num_pots > 0):
                 plan.append({
                 "sku": potion.sku, 
