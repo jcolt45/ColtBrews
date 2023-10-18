@@ -28,7 +28,7 @@ def get_catalog():
                 plan.append({
                 "sku": potion.sku, 
                 "name": potion.name,
-                "quantity": potion.num,
+                "quantity": num_pots,
                 "price": potion.cost,
                 "potion_type": potion.type,
                 })
