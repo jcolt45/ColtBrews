@@ -65,7 +65,7 @@ def get_bottle_plan():
 
     # Initial logic: bottle all barrels into red potions.
     plan = []
-    min_pots = 5
+    min_pots = 10
     with db.engine.begin() as connection:
         result = connection.execute(
                 sqlalchemy.text("""
