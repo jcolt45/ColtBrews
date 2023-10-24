@@ -81,6 +81,13 @@ class CartCheckout(BaseModel):
 def checkout(cart_id: int, cart_checkout: CartCheckout):
     """ """
     with db.engine.begin() as connection:
+        new_id = connection.execute(
+            sqlalchemy.text("""
+                            INSERT INTO transactions
+                            (description)
+                            VALUES ('Cart Checkout') 
+                            RETURNING transaction_id
+                            """)).first().transaction_id
         result = connection.execute(
             sqlalchemy.text("""
                             SELECT * 
@@ -93,12 +100,12 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
         for row in result:
             total_potions += row.quantity
             connection.execute(
-            sqlalchemy.text("""
-                            INSERT INTO potion_ledger 
-                            (potion_id, potion_change)
-                            VALUES (:potion_id, :potion_change)
-                            """),
-                            [{"potion_id": row.potion_id, "potion_change": (-1 * row.quantity)}])
+                sqlalchemy.text("""
+                                INSERT INTO potion_ledger 
+                                (potion_id, potion_change, transaction_id)
+                                VALUES (:potion_id, :potion_change, :t_id)
+                                """),
+                                [{"potion_id": row.potion_id, "potion_change": (-1 * row.quantity), "t_id": new_id}])
             cost = connection.execute(
                 sqlalchemy.text("""
                                 SELECT cost 
@@ -110,9 +117,9 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
         connection.execute(
             sqlalchemy.text("""
                             INSERT INTO inventory_ledger
-                            (gold)
-                            VALUES (:gold)
+                            (gold, transaction_id)
+                            VALUES (:gold, :t_id)
                             """),
-                            [{"gold": total_cost}])
+                            [{"gold": total_cost, "t_id": new_id}])
         return {"total_potions_bought": total_potions, "total_gold_paid": total_cost}
 

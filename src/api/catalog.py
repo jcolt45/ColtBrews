@@ -13,6 +13,7 @@ def get_catalog():
     """
     # Can return a max of 20 items.
     plan = []
+    num = 0
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text("SELECT * FROM potion_inventory"))
         for potion in result:
@@ -24,7 +25,8 @@ def get_catalog():
                                 WHERE potion_id = :potion_id
                                 """),
                                 [{"potion_id": potion.potion_id}]).first().num_pots
-            if (num_pots > 0):
+            if ((num_pots > 0) & (num < 6)):
+                num += 1
                 plan.append({
                 "sku": potion.sku, 
                 "name": potion.name,

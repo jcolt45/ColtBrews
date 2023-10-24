@@ -23,33 +23,43 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory]):
 
     with db.engine.begin() as connection:
         for potion in potions_delivered:
-            pot_id = connection.execute(
-            sqlalchemy.text("""
-                            SELECT potion_id
-                            FROM potion_inventory
-                            WHERE type = :potion_type
-                            """),
-                            [{"potion_type": potion.potion_type}]).first().potion_id
-    
-            connection.execute(
-            sqlalchemy.text("""
-                            INSERT INTO potion_ledger 
-                            (potion_id, potion_change)
-                            VALUES (:potion_id, :potion_change)
-                            """),
-                            [{"potion_id": pot_id, "potion_change": potion.quantity}])
-    
             red_ml = -1 * (potion.potion_type[0] * potion.quantity)
             green_ml = -1 * (potion.potion_type[1] * potion.quantity)
             blue_ml = -1 * (potion.potion_type[2] * potion.quantity)
             dark_ml = -1 * (potion.potion_type[3] * potion.quantity)
+            new_id = connection.execute(
+                sqlalchemy.text("""
+                                INSERT INTO transactions
+                                (description)
+                                VALUES ('Bottled ml into Potions') 
+                                RETURNING transaction_id
+                                """)).first().transaction_id
+            
             connection.execute(
-            sqlalchemy.text("""
-                            INSERT INTO inventory_ledger 
-                            (red_ml, green_ml, blue_ml, dark_ml)
-                            VALUES (:red_ml, :green_ml, :blue_ml, :dark_ml)
-                            """),
-                            [{"red_ml": red_ml, "green_ml": green_ml, "blue_ml": blue_ml, "dark_ml": dark_ml}])
+                sqlalchemy.text("""
+                                INSERT INTO inventory_ledger 
+                                (red_ml, green_ml, blue_ml, dark_ml, transaction_id)
+                                VALUES (:red_ml, :green_ml, :blue_ml, :dark_ml, :t_id)
+                                """),
+                                [{"red_ml": red_ml, "green_ml": green_ml, "blue_ml": blue_ml, "dark_ml": dark_ml, "t_id": new_id}])
+
+
+            pot_id = connection.execute(
+                sqlalchemy.text("""
+                                SELECT potion_id
+                                FROM potion_inventory
+                                WHERE type = :potion_type
+                                """),
+                                [{"potion_type": potion.potion_type}]).first().potion_id
+            
+            connection.execute(
+                sqlalchemy.text("""
+                                INSERT INTO potion_ledger 
+                                (potion_id, potion_change, transaction_id)
+                                VALUES (:potion_id, :potion_change, :t_id)
+                                """),
+                                [{"potion_id": pot_id, "potion_change": potion.quantity, "t_id": new_id}])
+
     return "OK"
 
 # Gets called 4 times a day

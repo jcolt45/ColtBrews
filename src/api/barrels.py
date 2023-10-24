@@ -42,13 +42,20 @@ def post_deliver_barrels(barrels_delivered: list[Barrel]):
         cost -= (barrel.price * barrel.quantity)
     
     with db.engine.begin() as connection:
+        new_id = connection.execute(
+            sqlalchemy.text("""
+                            INSERT INTO transactions
+                            (description)
+                            VALUES ('Delivered Barels') 
+                            RETURNING transaction_id
+                            """)).first().transaction_id
         connection.execute(
             sqlalchemy.text("""
                             INSERT INTO inventory_ledger 
-                            (gold, red_ml, green_ml, blue_ml, dark_ml)
-                            VALUES (:gold, :red_ml, :green_ml, :blue_ml, :dark_ml)
+                            (gold, red_ml, green_ml, blue_ml, dark_ml, transaction_id)
+                            VALUES (:gold, :red_ml, :green_ml, :blue_ml, :dark_ml, :t_id)
                             """),
-                            [{"gold": cost, "red_ml": red_ml, "green_ml": green_ml, "blue_ml": blue_ml, "dark_ml": dark_ml}])
+                            [{"gold": cost, "red_ml": red_ml, "green_ml": green_ml, "blue_ml": blue_ml, "dark_ml": dark_ml, "t_id": new_id}])
     return "OK"
 
 # Gets called once a day
