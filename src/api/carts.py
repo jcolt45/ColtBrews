@@ -52,6 +52,10 @@ def search_orders(
     time is 5 total line items.
     """
     with db.engine.begin() as connection:
+        if (sort_order == "asc"):
+            order = "ASC"
+        else:
+            order = "DESC"
         if ((customer_name != "") & (potion_sku != "")):
             result = connection.execute(
                 sqlalchemy.text("""
@@ -67,7 +71,7 @@ def search_orders(
                                 AND cart_items.sku = :sku
                                 ORDER BY :col :order;
                                 """),
-                                [{"col": sort_col, "order": sort_order, "name": customer_name, "sku": potion_sku}])
+                                [{"col": sort_col, "order": order, "name": customer_name, "sku": potion_sku}])
         elif (customer_name != ""):
             result = connection.execute(
                 sqlalchemy.text("""
@@ -82,7 +86,7 @@ def search_orders(
                                 WHERE carts.name = :name
                                 ORDER BY :col :order;
                                 """),
-                                [{"col": sort_col, "order": sort_order, "name": customer_name}])
+                                [{"col": sort_col, "order": order, "name": customer_name}])
         elif (potion_sku != ""):
             result = connection.execute(
                 sqlalchemy.text("""
@@ -97,7 +101,7 @@ def search_orders(
                                 WHERE cart_items.sku = :sku
                                 ORDER BY :col :order;
                                 """),
-                                [{"col": sort_col, "order": sort_order, "sku": potion_sku}])
+                                [{"col": sort_col, "order": order, "sku": potion_sku}])
         else:
             result = connection.execute(
                 sqlalchemy.text("""
@@ -110,7 +114,7 @@ def search_orders(
                                 JOIN cart_items ON carts.cart_id = cart_items.cart_id
                                 ORDER BY :col :order;
                                 """),
-                                [{"col": sort_col, "order": sort_order}])
+                                [{"col": sort_col, "order": order}])
         if (search_page == ""):
             last = 5
         else:
