@@ -51,48 +51,111 @@ def search_orders(
     Your results must be paginated, the max results you can return at any
     time is 5 total line items.
     """
-    
-    return {
-        "previous": "1",
-        "next": "",
-        "results": [
-            {
-                "line_item_id": 1,
-                "item_sku": "1 oblivion potion",
-                "customer_name": "Scaramouche",
-                "line_item_total": 50,
-                "timestamp": "2021-01-01T00:00:00Z",
-            },
-            {
-                "line_item_id": 2,
-                "item_sku": "2 oblivion potion",
-                "customer_name": "Scaramouche",
-                "line_item_total": 50,
-                "timestamp": "2021-01-01T00:00:00Z",
-            },
-            {
-                "line_item_id": 3,
-                "item_sku": "3 oblivion potion",
-                "customer_name": "Scaramouche",
-                "line_item_total": 50,
-                "timestamp": "2021-01-01T00:00:00Z",
-            },
-            {
-                "line_item_id": 4,
-                "item_sku": "4 oblivion potion",
-                "customer_name": "Scaramouche",
-                "line_item_total": 50,
-                "timestamp": "2021-01-01T00:00:00Z",
-            },
-            {
-                "line_item_id": 5,
-                "item_sku": "5 oblivion potion",
-                "customer_name": "Scaramouche",
-                "line_item_total": 50,
-                "timestamp": "2021-01-01T00:00:00Z",
-            }
-        ],
-    }
+    with db.engine.begin() as connection:
+        if ((customer_name != "") & (potion_sku != "")):
+            result = connection.execute(
+                sqlalchemy.text("""
+                                SELECT 
+                                carts.name as name, 
+                                cart.created_at as time, 
+                                cart_items.potion_id as pot_id, 
+                                cart_items.quantity as num
+                                FROM carts
+                                JOIN cart_items 
+                                ON carts.cart_id = cart_items.cart_id
+                                WHERE carts.name = :name
+                                AND cart_items.sku = :sku
+                                ORDER BY :col :order;
+                                """),
+                                [{"col": sort_col, "order": sort_order, "name": customer_name, "sku": potion_sku}])
+        elif (customer_name != ""):
+            result = connection.execute(
+                sqlalchemy.text("""
+                                SELECT 
+                                carts.name as name, 
+                                cart.created_at as time,
+                                cart_items.potion_id as pot_id, 
+                                cart_items.quantity as num
+                                FROM carts
+                                JOIN cart_items 
+                                ON carts.cart_id = cart_items.cart_id
+                                WHERE carts.name = :name
+                                ORDER BY :col :order;
+                                """),
+                                [{"col": sort_col, "order": sort_order, "name": customer_name}])
+        elif (potion_sku != ""):
+            result = connection.execute(
+                sqlalchemy.text("""
+                                SELECT 
+                                carts.name as name, 
+                                cart.created_at as time,
+                                cart_items.potion_id as pot_id, 
+                                cart_items.quantity as num
+                                FROM carts
+                                JOIN cart_items 
+                                ON carts.cart_id = cart_items.cart_id
+                                WHERE cart_items.sku = :sku
+                                ORDER BY :col :order;
+                                """),
+                                [{"col": sort_col, "order": sort_order, "sku": potion_sku}])
+        else:
+            result = connection.execute(
+                sqlalchemy.text("""
+                                SELECT 
+                                carts.name as name, 
+                                cart.created_at as time,
+                                cart_items.potion_id as pot_id, 
+                                cart_items.quantity as num
+                                FROM carts
+                                JOIN cart_items ON carts.cart_id = cart_items.cart_id
+                                ORDER BY :col :order;
+                                """),
+                                [{"col": sort_col, "order": sort_order}])
+        if (search_page == ""):
+            last = 5
+        else:
+            last = int(search_page) * 5
+        first = last - 4
+        cur = 1
+        line = 1 
+        results = []
+        for row in result:
+            if ((cur >= first) & (cur <= last)):
+                pot = connection.execute(
+                    sqlalchemy.text("""
+                                    SELECT sku, cost
+                                    FROM potion_inventory
+                                    WHERE potion_id = :pot_id
+                                    """),
+                                    [{"col": sort_col, "order": sort_order, "pot_id": row.pot_id}]).first
+                gold = pot.cost * row.num
+                if (row.num == 1):
+                    sku = "1 {} Potion".format(pot.sku)
+                else:
+                    sku = "{} {} Potions".format(row.num, pot.sku)
+                result.append[{
+                    "line_item_id": line,
+                    "item_sku": sku,
+                    "customer_name": row.name,
+                    "line_item_total": gold,
+                    "timestamp": row.time,
+                }]
+                line += 1
+            cur += 1
+        if (cur > last):
+            next = "{}".format((int(search_page) + 1))
+        else:
+            next = ""
+        if (search_page == "") | (search_page == "1"):
+            prev = ""
+        else:
+            prev = "{}".format((int(search_page) - 1))
+
+        return {
+            "previous": prev,
+            "next": next,
+            "results": results,
+        }
 
 
 class NewCart(BaseModel):
