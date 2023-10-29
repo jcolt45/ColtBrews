@@ -52,11 +52,9 @@ def search_orders(
     time is 5 total line items.
     """
     
-        
-
     return {
         "previous": "1",
-        "next": "3",
+        "next": "",
         "results": [
             {
                 "line_item_id": 1,
