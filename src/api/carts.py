@@ -52,6 +52,16 @@ def search_orders(
     time is 5 total line items.
     """
     with db.engine.begin() as connection:
+        if (sort_col == "timestamp"):
+            sort = "cart.created_at"
+        elif (sort_col == "customer_name"):
+            sort = "cart.name"
+        elif (sort_col == "item_sku"):
+            sort = "cart_items.sku"
+        elif (sort_col == "line_item_total"):
+            sort = "hi"
+        else:
+            sort = "hi"
         if (sort_order == "asc"):
             order = "ASC"
         else:
@@ -112,9 +122,9 @@ def search_orders(
                                 cart_items.quantity as num
                                 FROM carts
                                 JOIN cart_items ON carts.cart_id = cart_items.cart_id
-                                ORDER BY :col :order;
+                                ORDER BY :col DESC;
                                 """),
-                                [{"col": sort_col, "order": order}])
+                                [{"col": sort_col}])
         if (search_page == ""):
             last = 5
         else:
