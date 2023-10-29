@@ -55,8 +55,8 @@ def search_orders(
         
 
     return {
-        "previous": "",
-        "next": "",
+        "previous": "1",
+        "next": "3",
         "results": [
             {
                 "line_item_id": 1,
@@ -66,7 +66,7 @@ def search_orders(
                 "timestamp": "2021-01-01T00:00:00Z",
             },
             {
-                "line_item_id": 1,
+                "line_item_id": 2,
                 "item_sku": "2 oblivion potion",
                 "customer_name": "Scaramouche",
                 "line_item_total": 50,
