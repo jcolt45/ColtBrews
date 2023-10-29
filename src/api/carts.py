@@ -51,6 +51,8 @@ def search_orders(
     Your results must be paginated, the max results you can return at any
     time is 5 total line items.
     """
+    
+        
 
     return {
         "previous": "",
@@ -59,6 +61,13 @@ def search_orders(
             {
                 "line_item_id": 1,
                 "item_sku": "1 oblivion potion",
+                "customer_name": "Scaramouche",
+                "line_item_total": 50,
+                "timestamp": "2021-01-01T00:00:00Z",
+            },
+            {
+                "line_item_id": 2,
+                "item_sku": "2 oblivion potion",
                 "customer_name": "Scaramouche",
                 "line_item_total": 50,
                 "timestamp": "2021-01-01T00:00:00Z",
