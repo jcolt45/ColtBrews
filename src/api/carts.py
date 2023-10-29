@@ -79,9 +79,9 @@ def search_orders(
                                 ON carts.cart_id = cart_items.cart_id
                                 WHERE carts.name = :name
                                 AND cart_items.sku = :sku
-                                ORDER BY :col :order;
+                                ORDER BY :col DESC;
                                 """),
-                                [{"col": sort_col, "order": order, "name": customer_name, "sku": potion_sku}])
+                                [{"col": sort, "name": customer_name, "sku": potion_sku}])
         elif (customer_name != ""):
             result = connection.execute(
                 sqlalchemy.text("""
@@ -94,9 +94,9 @@ def search_orders(
                                 JOIN cart_items 
                                 ON carts.cart_id = cart_items.cart_id
                                 WHERE carts.name = :name
-                                ORDER BY :col :order;
+                                ORDER BY :col DESC;
                                 """),
-                                [{"col": sort_col, "order": order, "name": customer_name}])
+                                [{"col": sort, "name": customer_name}])
         elif (potion_sku != ""):
             result = connection.execute(
                 sqlalchemy.text("""
@@ -109,9 +109,9 @@ def search_orders(
                                 JOIN cart_items 
                                 ON carts.cart_id = cart_items.cart_id
                                 WHERE cart_items.sku = :sku
-                                ORDER BY :col :order;
+                                ORDER BY :col DESC;
                                 """),
-                                [{"col": sort_col, "order": order, "sku": potion_sku}])
+                                [{"col": sort, "sku": potion_sku}])
         else:
             result = connection.execute(
                 sqlalchemy.text("""
@@ -124,7 +124,7 @@ def search_orders(
                                 JOIN cart_items ON carts.cart_id = cart_items.cart_id
                                 ORDER BY :col DESC;
                                 """),
-                                [{"col": sort_col}])
+                                [{"col": sort}])
         if (search_page == ""):
             last = 5
         else:
