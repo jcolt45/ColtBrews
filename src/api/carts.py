@@ -20,8 +20,8 @@ class search_sort_options(str, Enum):
     timestamp = "timestamp"
 
 class search_sort_order(str, Enum):
-    asc = "ASC"
-    desc = "DESC"   
+    asc = "asc"
+    desc = "desc"   
 
 @router.get("/search/", tags=["search"])
 def search_orders(
