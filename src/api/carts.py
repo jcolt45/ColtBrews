@@ -53,9 +53,9 @@ def search_orders(
     """
     with db.engine.begin() as connection:
         if (sort_col == "timestamp"):
-            sort = "carts.created_at"
+            sort = 'carts.created_at'
         elif (sort_col == "customer_name"):
-            sort = "carts.name"
+            sort = 'carts.name'
         elif (sort_col == "item_sku"):
             sort = "cart_items.sku"
         elif (sort_col == "line_item_total"):
