@@ -52,20 +52,6 @@ def search_orders(
     time is 5 total line items.
     """
     with db.engine.begin() as connection:
-        if (sort_col == "timestamp"):
-            sort = 'carts.created_at'
-        elif (sort_col == "customer_name"):
-            sort = 'carts.name'
-        elif (sort_col == "item_sku"):
-            sort = "cart_items.sku"
-        elif (sort_col == "line_item_total"):
-            sort = "hi"
-        else:
-            sort = "hi"
-        if (sort_order == "asc"):
-            order = "ASC"
-        else:
-            order = "DESC"
         if (search_page == ""):
             off = 0
         else:
@@ -86,11 +72,11 @@ def search_orders(
                                 ON cart_items.potion_id = potion_inventory.potion_id
                                 WHERE carts.name = :name
                                 AND cart_items.sku = :sku
-                                ORDER BY :col DESC
+                                ORDER BY carts.created_at DESC
                                 LIMIT 6
                                 OFFSET :off
                                 """),
-                                [{"col": sort, "name": customer_name, "sku": potion_sku, "off": off}])
+                                [{"name": customer_name, "sku": potion_sku, "off": off}])
         elif (customer_name != ""):
             result = connection.execute(
                 sqlalchemy.text("""
@@ -106,11 +92,11 @@ def search_orders(
                                 JOIN potion_inventory
                                 ON cart_items.potion_id = potion_inventory.potion_id
                                 WHERE carts.name = :name
-                                ORDER BY :col DESC
+                                ORDER BY carts.created_at DESC
                                 LIMIT 6
                                 OFFSET :off
                                 """),
-                                [{"col": sort, "name": customer_name, "off": off}])
+                                [{"name": customer_name, "off": off}])
         elif (potion_sku != ""):
             result = connection.execute(
                 sqlalchemy.text("""
@@ -126,11 +112,11 @@ def search_orders(
                                 JOIN potion_inventory
                                 ON cart_items.potion_id = potion_inventory.potion_id
                                 WHERE cart_items.sku = :sku
-                                ORDER BY :col DESC
+                                ORDER BY carts.created_at DESC
                                 LIMIT 6
                                 OFFSET :off
                                 """),
-                                [{"col": sort, "sku": potion_sku, "off": off}])
+                                [{"sku": potion_sku, "off": off}])
         else:
             result = connection.execute(
                 sqlalchemy.text("""
@@ -145,11 +131,11 @@ def search_orders(
                                 ON carts.cart_id = cart_items.cart_id
                                 JOIN potion_inventory
                                 ON cart_items.potion_id = potion_inventory.potion_id
-                                ORDER BY :col DESC
+                                ORDER BY carts.created_at DESC
                                 LIMIT 6
                                 OFFSET :off
                                 """),
-                                [{"col": sort, "off": off}])
+                                [{"off": off}])
         
         results = []
         num = 1
