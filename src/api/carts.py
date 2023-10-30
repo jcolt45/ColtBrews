@@ -55,7 +55,7 @@ def search_orders(
         if (search_page == ""):
             off = 0
         else:
-            off = int(search_page) - 1
+            off = (int(search_page) - 1) * 5
         if ((customer_name != "") & (potion_sku != "")):
             result = connection.execute(
                 sqlalchemy.text("""
@@ -153,16 +153,18 @@ def search_orders(
                     "timestamp": row.time,
                 })
             num += 1
-        
-        if (num == 6):
-            next = "{}".format((int(search_page) + 1))
+        if (search_page == ""):
+            page = 1
         else:
-            next = ""
-        if (search_page == "") | (search_page == "1"):
+            page = int(search_page)
+        if (page == 1):
             prev = ""
         else:
-            prev = "{}".format((int(search_page) - 1))
-
+            prev = "{}".format(page - 1)
+        if (num == 7):
+            next = "{}".format(page + 1)
+        else:
+            next = ""
         return {
             "previous": prev,
             "next": next,
