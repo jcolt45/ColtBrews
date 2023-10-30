@@ -56,86 +56,171 @@ def search_orders(
             off = 0
         else:
             off = (int(search_page) - 1) * 5
-        if ((customer_name != "") & (potion_sku != "")):
-            result = connection.execute(
-                sqlalchemy.text("""
-                                SELECT 
-                                carts.name as name, 
-                                carts.created_at as time, 
-                                cart_items.quantity * potion_inventory.cost as cost, 
-                                cart_items.quantity as num,
-                                potion_inventory.sku as sku
-                                FROM carts
-                                JOIN cart_items 
-                                ON carts.cart_id = cart_items.cart_id
-                                JOIN potion_inventory
-                                ON cart_items.potion_id = potion_inventory.potion_id
-                                WHERE carts.name = :name
-                                AND cart_items.sku = :sku
-                                ORDER BY carts.created_at DESC
-                                LIMIT 6
-                                OFFSET :off
-                                """),
-                                [{"name": customer_name, "sku": potion_sku, "off": off}])
-        elif (customer_name != ""):
-            result = connection.execute(
-                sqlalchemy.text("""
-                                SELECT 
-                                carts.name as name, 
-                                carts.created_at as time, 
-                                cart_items.quantity * potion_inventory.cost as cost, 
-                                cart_items.quantity as num,
-                                potion_inventory.sku as sku
-                                FROM carts
-                                JOIN cart_items 
-                                ON carts.cart_id = cart_items.cart_id
-                                JOIN potion_inventory
-                                ON cart_items.potion_id = potion_inventory.potion_id
-                                WHERE carts.name = :name
-                                ORDER BY carts.created_at DESC
-                                LIMIT 6
-                                OFFSET :off
-                                """),
-                                [{"name": customer_name, "off": off}])
-        elif (potion_sku != ""):
-            result = connection.execute(
-                sqlalchemy.text("""
-                                SELECT 
-                                carts.name as name, 
-                                carts.created_at as time, 
-                                cart_items.quantity * potion_inventory.cost as cost, 
-                                cart_items.quantity as num,
-                                potion_inventory.sku as sku
-                                FROM carts
-                                JOIN cart_items 
-                                ON carts.cart_id = cart_items.cart_id
-                                JOIN potion_inventory
-                                ON cart_items.potion_id = potion_inventory.potion_id
-                                WHERE cart_items.sku = :sku
-                                ORDER BY carts.created_at DESC
-                                LIMIT 6
-                                OFFSET :off
-                                """),
-                                [{"sku": potion_sku, "off": off}])
-        else:
-            result = connection.execute(
-                sqlalchemy.text("""
-                                SELECT 
-                                carts.name as name, 
-                                carts.created_at as time, 
-                                cart_items.quantity * potion_inventory.cost as cost, 
-                                cart_items.quantity as num,
-                                potion_inventory.sku as sku
-                                FROM carts
-                                JOIN cart_items 
-                                ON carts.cart_id = cart_items.cart_id
-                                JOIN potion_inventory
-                                ON cart_items.potion_id = potion_inventory.potion_id
-                                ORDER BY carts.created_at DESC
-                                LIMIT 6
-                                OFFSET :off
-                                """),
-                                [{"off": off}])
+        if (sort_col == "timestamp"):
+            if ((customer_name != "") & (potion_sku != "")):
+                if (sort_order == "asc"):
+                    result = connection.execute(
+                        sqlalchemy.text("""
+                                        SELECT 
+                                        carts.name as name, 
+                                        carts.created_at as time, 
+                                        cart_items.quantity * potion_inventory.cost as cost, 
+                                        cart_items.quantity as num,
+                                        potion_inventory.sku as sku
+                                        FROM carts
+                                        JOIN cart_items 
+                                        ON carts.cart_id = cart_items.cart_id
+                                        JOIN potion_inventory
+                                        ON cart_items.potion_id = potion_inventory.potion_id
+                                        WHERE carts.name = :name
+                                        AND cart_items.sku = :sku
+                                        ORDER BY carts.created_at ASC
+                                        LIMIT 6
+                                        OFFSET :off
+                                        """),
+                                        [{"name": customer_name, "sku": potion_sku, "off": off}])
+                else:
+                    result = connection.execute(
+                        sqlalchemy.text("""
+                                        SELECT 
+                                        carts.name as name, 
+                                        carts.created_at as time, 
+                                        cart_items.quantity * potion_inventory.cost as cost, 
+                                        cart_items.quantity as num,
+                                        potion_inventory.sku as sku
+                                        FROM carts
+                                        JOIN cart_items 
+                                        ON carts.cart_id = cart_items.cart_id
+                                        JOIN potion_inventory
+                                        ON cart_items.potion_id = potion_inventory.potion_id
+                                        WHERE carts.name = :name
+                                        AND cart_items.sku = :sku
+                                        ORDER BY carts.created_at DESC
+                                        LIMIT 6
+                                        OFFSET :off
+                                        """),
+                                        [{"name": customer_name, "sku": potion_sku, "off": off}])
+            elif (customer_name != ""):
+                if (sort_order == "asc"):
+                        result = connection.execute(
+                        sqlalchemy.text("""
+                                        SELECT 
+                                        carts.name as name, 
+                                        carts.created_at as time, 
+                                        cart_items.quantity * potion_inventory.cost as cost, 
+                                        cart_items.quantity as num,
+                                        potion_inventory.sku as sku
+                                        FROM carts
+                                        JOIN cart_items 
+                                        ON carts.cart_id = cart_items.cart_id
+                                        JOIN potion_inventory
+                                        ON cart_items.potion_id = potion_inventory.potion_id
+                                        WHERE carts.name = :name
+                                        ORDER BY carts.created_at ASC
+                                        LIMIT 6
+                                        OFFSET :off
+                                        """),
+                                        [{"name": customer_name, "off": off}])
+                else:
+                    result = connection.execute(
+                        sqlalchemy.text("""
+                                        SELECT 
+                                        carts.name as name, 
+                                        carts.created_at as time, 
+                                        cart_items.quantity * potion_inventory.cost as cost, 
+                                        cart_items.quantity as num,
+                                        potion_inventory.sku as sku
+                                        FROM carts
+                                        JOIN cart_items 
+                                        ON carts.cart_id = cart_items.cart_id
+                                        JOIN potion_inventory
+                                        ON cart_items.potion_id = potion_inventory.potion_id
+                                        WHERE carts.name = :name
+                                        ORDER BY carts.created_at DESC
+                                        LIMIT 6
+                                        OFFSET :off
+                                        """),
+                                        [{"name": customer_name, "off": off}])
+            elif (potion_sku != ""):
+                if (sort_order == "asc"):
+                        result = connection.execute(
+                        sqlalchemy.text("""
+                                        SELECT 
+                                        carts.name as name, 
+                                        carts.created_at as time, 
+                                        cart_items.quantity * potion_inventory.cost as cost, 
+                                        cart_items.quantity as num,
+                                        potion_inventory.sku as sku
+                                        FROM carts
+                                        JOIN cart_items 
+                                        ON carts.cart_id = cart_items.cart_id
+                                        JOIN potion_inventory
+                                        ON cart_items.potion_id = potion_inventory.potion_id
+                                        WHERE cart_items.sku = :sku
+                                        ORDER BY carts.created_at ASC
+                                        LIMIT 6
+                                        OFFSET :off
+                                        """),
+                                        [{"sku": potion_sku, "off": off}])
+                else:
+                    result = connection.execute(
+                        sqlalchemy.text("""
+                                        SELECT 
+                                        carts.name as name, 
+                                        carts.created_at as time, 
+                                        cart_items.quantity * potion_inventory.cost as cost, 
+                                        cart_items.quantity as num,
+                                        potion_inventory.sku as sku
+                                        FROM carts
+                                        JOIN cart_items 
+                                        ON carts.cart_id = cart_items.cart_id
+                                        JOIN potion_inventory
+                                        ON cart_items.potion_id = potion_inventory.potion_id
+                                        WHERE cart_items.sku = :sku
+                                        ORDER BY carts.created_at DESC
+                                        LIMIT 6
+                                        OFFSET :off
+                                        """),
+                                        [{"sku": potion_sku, "off": off}])
+            else:
+                if (sort_order == "asc"):
+                        result = connection.execute(
+                        sqlalchemy.text("""
+                                        SELECT 
+                                        carts.name as name, 
+                                        carts.created_at as time, 
+                                        cart_items.quantity * potion_inventory.cost as cost, 
+                                        cart_items.quantity as num,
+                                        potion_inventory.sku as sku
+                                        FROM carts
+                                        JOIN cart_items 
+                                        ON carts.cart_id = cart_items.cart_id
+                                        JOIN potion_inventory
+                                        ON cart_items.potion_id = potion_inventory.potion_id
+                                        ORDER BY carts.created_at ASC
+                                        LIMIT 6
+                                        OFFSET :off
+                                        """),
+                                        [{"off": off}])
+                else:
+                    result = connection.execute(
+                        sqlalchemy.text("""
+                                        SELECT 
+                                        carts.name as name, 
+                                        carts.created_at as time, 
+                                        cart_items.quantity * potion_inventory.cost as cost, 
+                                        cart_items.quantity as num,
+                                        potion_inventory.sku as sku
+                                        FROM carts
+                                        JOIN cart_items 
+                                        ON carts.cart_id = cart_items.cart_id
+                                        JOIN potion_inventory
+                                        ON cart_items.potion_id = potion_inventory.potion_id
+                                        ORDER BY carts.created_at DESC
+                                        LIMIT 6
+                                        OFFSET :off
+                                        """),
+                                        [{"off": off}])
         
         results = []
         num = 1
