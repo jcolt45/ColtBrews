@@ -83,7 +83,7 @@ def search_orders(
                                 JOIN cart_items 
                                 ON carts.cart_id = cart_items.cart_id
                                 JOIN potion_inventory
-                                ON cart_items.potion_id = potions_inventory.potion_id
+                                ON cart_items.potion_id = potion_inventory.potion_id
                                 WHERE carts.name = :name
                                 AND cart_items.sku = :sku
                                 ORDER BY :col DESC
@@ -104,7 +104,7 @@ def search_orders(
                                 JOIN cart_items 
                                 ON carts.cart_id = cart_items.cart_id
                                 JOIN potion_inventory
-                                ON cart_items.potion_id = potions_inventory.potion_id
+                                ON cart_items.potion_id = potion_inventory.potion_id
                                 WHERE carts.name = :name
                                 ORDER BY :col DESC
                                 LIMIT 6
@@ -124,7 +124,7 @@ def search_orders(
                                 JOIN cart_items 
                                 ON carts.cart_id = cart_items.cart_id
                                 JOIN potion_inventory
-                                ON cart_items.potion_id = potions_inventory.potion_id
+                                ON cart_items.potion_id = potion_inventory.potion_id
                                 WHERE cart_items.sku = :sku
                                 ORDER BY :col DESC
                                 LIMIT 6
@@ -144,7 +144,7 @@ def search_orders(
                                 JOIN cart_items 
                                 ON carts.cart_id = cart_items.cart_id
                                 JOIN potion_inventory
-                                ON cart_items.potion_id = potions_inventory.potion_id
+                                ON cart_items.potion_id = potion_inventory.potion_id
                                 ORDER BY :col DESC
                                 LIMIT 6
                                 OFFSET :off
